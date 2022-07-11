@@ -2,7 +2,6 @@ package me.TEXAPlayer.AutoAvatar;
 
 import com.projectkorra.projectkorra.event.BendingPlayerCreationEvent;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,11 +23,5 @@ public class Join implements Listener
         Player player = event.getBendingPlayer().getPlayer();
         if (main.avatar.getStringList("name-list").contains(player.getName()))
             m.RemoveExistingAvatar(player);
-        if (Bukkit.getOnlinePlayers().size() >= main.config.getInt("player-amount") && 
-            main.config.getBoolean("choose-new") && player != null)
-        {
-            Player rPlayer = m.RandomPlayer();
-            main.timer.NewAvatar(rPlayer);
-        }
     }
 }

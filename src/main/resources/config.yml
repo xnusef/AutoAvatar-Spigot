@@ -1,10 +1,6 @@
 #Plugin by TEXAPlayer
 #This file stores plugin configuration
 
-enable-cycle: true
-delay: 60
-interval: 500
-player-amount: 3
 avatar-duration: 7
 death-immunity: 1
 new-avatar-messages: 

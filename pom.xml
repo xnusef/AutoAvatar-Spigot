@@ -3,14 +3,14 @@
     
     <!-- Project information -->
     <groupId>me.TEXAPlayer</groupId>
-    <artifactId>AutoAvatar</artifactId>
+    <artifactId>AutoAvatar-Spigot</artifactId>
     <packaging>jar</packaging>
 
     <!-- Plugin Information -->
-    <name>AutoAvatar</name>
+    <name>AutoAvatar-Spigot</name>
     <description>Automatically Selects Avatar</description>
-    <version>0.1.1</version>
-    <url>https://github.com/xnusef/AutoAvatar</url>
+    <version>0.1.0</version>
+    <url>https://github.com/xnusef/AutoAvatar-Spigot</url>
 
     <properties>
         <author>TEXAPlayer</author>
@@ -39,7 +39,7 @@
             <artifactId>projectkorra</artifactId>
             <version>1.9.3</version>
             <scope>system</scope>
-            <systemPath>C:/Users/kakar/Documents/AIM/minecraft server/Plugin/AutoAvatar/lib/ProjectKorra-1.9.3.jar</systemPath>
+            <systemPath>C:/Users/kakar/Documents/AIM/minecraft server/Plugin/AutoAvatar-Spigot/lib/ProjectKorra-1.9.3.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>net.luckperms</groupId>

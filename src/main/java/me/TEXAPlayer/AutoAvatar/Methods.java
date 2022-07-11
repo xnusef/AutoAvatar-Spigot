@@ -28,6 +28,14 @@ public class Methods
         main = plugin;
     }
 
+    public void NewAvatar(Player player)
+    {
+        SetAvatarInfo(player);
+        GiveAllElements(BendingPlayer.getBendingPlayer(player));
+        AddToGroup(player, "avatar");
+        NewAvatarNotification(player);
+    }
+
     public Player RandomPlayer()
     {
         List<Player> weightedPlayers = WeightedList();
@@ -91,11 +99,11 @@ public class Methods
         LocalDateTime now = LocalDateTime.now();
         main.avatar.set("choose-new", false);
         main.avatar.set("avatar", player.getName());
-        main.avatar.set("start-date", now.format(main.timer.formatter));
+        main.avatar.set("start-date", now.format(main.messaging.formatter));
         main.avatar.set
         (
             "end-date",
-            now.plusDays(main.config.getInt("avatar-duration")).format(main.timer.formatter)
+            now.plusDays(main.config.getInt("avatar-duration")).format(main.messaging.formatter)
         );
         main.avatar.set("previous-element", ElementToString(bPlayer));
         main.SaveAvatar();

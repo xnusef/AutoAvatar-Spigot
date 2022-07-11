@@ -13,37 +13,47 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class Main extends JavaPlugin
 {
+    private static Main instance;
     private File configFile;
     private File avatarFile;
     public FileConfiguration config;
     public FileConfiguration avatar;
 
     private Methods methods;
-    public Timer timer;
     private Join join;
     private Death death;
-    private Server server;
+    public Messaging messaging;
+    public Server server;
     private PluginManager pm;
 
     @Override
     public void onEnable() 
     {
+        SetInstances();
+        RegisterEvents();
+        ManageFiles();
+    }
+
+    public static Main GetInstance()
+    {
+        return instance;
+    }
+
+    private void SetInstances()
+    {
+        instance = this;
         server = Bukkit.getServer();
         pm = server.getPluginManager();
         methods = new Methods(this);
-        timer = new Timer(this, methods);
         join = new Join(this, methods);
         death = new Death(this, methods);
+        messaging = new Messaging(methods);
+    }
+
+    private void RegisterEvents()
+    {
         pm.registerEvents(join, this);
         pm.registerEvents(death, this);
-        ManageFiles();
-        if (config.getBoolean("enable-cycle"))
-            server.getScheduler().scheduleSyncRepeatingTask(
-                this,
-                timer.RepetitionCycle(),
-                20 * config.getLong("delay"),
-                20 * config.getLong("interval")
-            );
     }
 
     private void ManageFiles()

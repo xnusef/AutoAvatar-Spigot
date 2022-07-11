@@ -3,7 +3,6 @@ package me.TEXAPlayer.AutoAvatar;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -32,12 +31,8 @@ public class Death implements Listener
 
         if (now.isAfter(immune) && main.avatar.getString("avatar").equals(ePlayer.getName()))
         {
-            Player player = m.RandomPlayer();
             if (!main.avatar.getString("avatar").equals(""))
                 m.RemoveAvatar();
-            if (Bukkit.getOnlinePlayers().size() >= main.config.getInt("player-amount") && 
-                main.avatar.getBoolean("choose-new") && player != null)
-                main.timer.NewAvatar(player);
         }
     }
 }
