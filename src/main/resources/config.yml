@@ -1,0 +1,16 @@
+#Plugin by TEXAPlayer
+#This file stores plugin configuration
+
+enable-cycle: true
+delay: 60
+interval: 500
+player-amount: 3
+avatar-duration: 7
+death-immunity: 1
+new-avatar-messages: 
+  - "&8======================================="
+  - "&e{player} &7es el &9&lAVATAR &r&7ahora durante &e{duration} dias"
+  - "&cA menos que &4&lMUERA..."
+  - ""
+  - "&7Tiene &e{inmunity} días &7de &einmunidad."
+  - "&8======================================="

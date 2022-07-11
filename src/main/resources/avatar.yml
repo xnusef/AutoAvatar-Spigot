@@ -1,0 +1,10 @@
+#Plugin by TEXAPlayer
+#This file contains the information about avatars in the server
+
+choose-new: true
+avatar: ''
+start-date: 01/01/2022 00:00:00
+end-date: 01/01/2022 00:00:00
+previous-element: ''
+name-list: []
+element-list: []
