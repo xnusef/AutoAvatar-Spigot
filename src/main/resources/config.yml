@@ -1,7 +1,7 @@
 #Plugin by TEXAPlayer
 #This file stores plugin configuration
 
-avatar-duration: 7
+avatar-duration: 1
 death-immunity: 1
 new-avatar-messages: 
   - "&8======================================="

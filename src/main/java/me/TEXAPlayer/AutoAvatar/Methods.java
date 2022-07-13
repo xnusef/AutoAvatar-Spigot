@@ -11,7 +11,6 @@ import com.projectkorra.projectkorra.Element.SubElement;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.data.DataMutateResult;
@@ -30,49 +29,27 @@ public class Methods
 
     public void NewAvatar(Player player)
     {
-        SetAvatarInfo(player);
+        BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+        SetAvatarInfo(player.getName(), ElementToString(bPlayer));
         GiveAllElements(BendingPlayer.getBendingPlayer(player));
         AddToGroup(player, "avatar");
-        NewAvatarNotification(player);
+        NewAvatarNotification(player.getName());
+        SendNewAvatarMessage(player);
     }
 
-    public Player RandomPlayer()
+    private void SendNewAvatarMessage(Player player)
     {
-        List<Player> weightedPlayers = WeightedList();
-        if (weightedPlayers.isEmpty())
-            return null;
-        int index = (int) Math.floor(Math.random() * weightedPlayers.size()); 
-        return weightedPlayers.get(index);
+        List<String> data = new ArrayList<>();
+        data.add("newInfo");
+        data.add(player.getName());
+        data.add("noInfo");
+        main.messaging.SendMessage("autoavatar:newavatar", player, data);
     }
 
-    private List<Player> WeightedList()
+    public void NewAvatarOffline(String playerName, String element)
     {
-        List<Player> players = new ArrayList<Player>(Bukkit.getOnlinePlayers());
-        List<Player> playersToRandomize = new ArrayList<Player>();
-        for (Player player : players)
-            if (player.hasPermission("avatar.choosable") && HasPermissionStartingWith(player, "avatar.weight."))
-            {
-                String number = GetPermissionStartingWith(player, "avatar.weight.").replace("avatar.weight.", "");
-                for (int i = 1 ; i <= Integer.parseInt(number); i++)
-                    playersToRandomize.add(player);
-            }
-        return playersToRandomize;
-    }
-
-    private boolean HasPermissionStartingWith(Player player, String match)
-    {
-        for(PermissionAttachmentInfo permission : player.getEffectivePermissions())
-            if(permission.getPermission().startsWith(match) && permission.getValue())
-                return true;
-        return false;
-    }
-
-    private String GetPermissionStartingWith(Player player, String match)
-    {
-        for(PermissionAttachmentInfo permission : player.getEffectivePermissions())
-            if(permission.getPermission().startsWith(match) && permission.getValue())
-                return permission.getPermission();
-        return null;
+        SetAvatarInfo(playerName, element);
+        NewAvatarNotification(playerName);
     }
 
     public void RemoveAvatar()
@@ -93,19 +70,18 @@ public class Methods
         AddPlayerToList(names, elements);
     }
 
-    public void SetAvatarInfo(Player player)
+    private void SetAvatarInfo(String playerName, String element)
     {
-        BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
         LocalDateTime now = LocalDateTime.now();
         main.avatar.set("choose-new", false);
-        main.avatar.set("avatar", player.getName());
+        main.avatar.set("avatar", playerName);
         main.avatar.set("start-date", now.format(main.messaging.formatter));
         main.avatar.set
         (
             "end-date",
             now.plusDays(main.config.getInt("avatar-duration")).format(main.messaging.formatter)
         );
-        main.avatar.set("previous-element", ElementToString(bPlayer));
+        main.avatar.set("previous-element", element);
         main.SaveAvatar();
     }
 
@@ -124,7 +100,7 @@ public class Methods
         return null;
     }
 
-    public void GiveAllElements(BendingPlayer bPlayer)
+    private void GiveAllElements(BendingPlayer bPlayer)
     {
         Element[] elements = Element.getAllElements();
         for (Element element : elements)
@@ -136,7 +112,7 @@ public class Methods
         GeneralMethods.saveSubElements(bPlayer);
     }
 
-    public void GivePlayerElement(BendingPlayer bPlayer, Element element)
+    private void GivePlayerElement(BendingPlayer bPlayer, Element element)
     {
         if (!bPlayer.hasElement(element))
             bPlayer.addElement(element);
@@ -147,7 +123,7 @@ public class Methods
         GeneralMethods.saveSubElements(bPlayer);
     }
 
-    public void RemovePlayerElements(BendingPlayer bPlayer, String stringElement)
+    private void RemovePlayerElements(BendingPlayer bPlayer, String stringElement)
     {
         Element[] elements = Element.getAllElements();
         for (Element element : elements)
@@ -166,7 +142,7 @@ public class Methods
 		GeneralMethods.saveSubElements(bPlayer);
     }
 
-    public void AddPlayerToList(List<String> names, List<String> elements)
+    private void AddPlayerToList(List<String> names, List<String> elements)
     {
         names.add(main.avatar.getString("avatar"));
         elements.add(main.avatar.getString("previous-element"));
@@ -175,7 +151,7 @@ public class Methods
         RemoveAvatarInfo();
     }
 
-    public void RemovePlayerFromList(List<String> names, List<String> elements, Player player)
+    private void RemovePlayerFromList(List<String> names, List<String> elements, Player player)
     {
         int index = names.indexOf(player.getName());
         String element = elements.get(index);
@@ -187,7 +163,7 @@ public class Methods
         BackToBender(player, element);
     }
 
-    public void RemoveAvatarInfo()
+    private void RemoveAvatarInfo()
     {
         main.avatar.set("avatar", "");
         main.avatar.set("previous-element", "");
@@ -201,9 +177,34 @@ public class Methods
         List<String> names = main.avatar.getStringList("name-list");
         List<String> elements = main.avatar.getStringList("element-list");
         RemovePlayerFromList(names, elements, player);
+        SendRemoveMessage(player);
     }
 
-    public void BackToBender(Player player, String element)
+    private void SendRemoveMessage(Player player)
+    {
+        List<String> data = new ArrayList<>();
+        data.add("removeExistingAvatarInfo");
+        data.add(player.getName());
+        data.add("noInfo");
+        main.messaging.SendMessage("autoavatar:newavatar", player, data);
+    }
+
+    public void RemoveExistingAvatarInfo(String playerName)
+    {
+        if (!main.avatar.getStringList("name-list").contains(playerName))
+            return;
+        List<String> names = main.avatar.getStringList("name-list");
+        List<String> elements = main.avatar.getStringList("element-list");
+
+        int index = names.indexOf(playerName);
+        elements.remove(index);
+        names.remove(index);
+        main.avatar.set("name-list", names);
+        main.avatar.set("element-list", elements);
+        main.SaveAvatar();
+    }
+
+    private void BackToBender(Player player, String element)
     {
         RestoreElement(player, element);
         RemoveFromGroup(player, "avatar");
@@ -215,7 +216,7 @@ public class Methods
         RemovePlayerElements(bPlayer, element);
     }
 
-    public boolean AddToGroup(Player player, String group)
+    private boolean AddToGroup(Player player, String group)
     {
         LuckPerms luckPerms = Bukkit.getServer().getServicesManager().load(LuckPerms.class);
 
@@ -234,7 +235,7 @@ public class Methods
         return true;
     }
 
-    public boolean RemoveFromGroup(Player player, String group)
+    private boolean RemoveFromGroup(Player player, String group)
     {
         LuckPerms luckPerms = Bukkit.getServer().getServicesManager().load(LuckPerms.class);
 
@@ -253,13 +254,13 @@ public class Methods
         return true;
     }   
     
-    public void NewAvatarNotification(Player player)
+    private void NewAvatarNotification(String playerName)
     {
         List<String> configMsgs = main.config.getStringList("new-avatar-messages");
         if (!configMsgs.isEmpty())
             for (String parameterizedMsg : configMsgs) 
             {
-                String msg = parameterizedMsg.replace("{player}", player.getName())
+                String msg = parameterizedMsg.replace("{player}", playerName)
                     .replace("{duration}", main.config.getString("avatar-duration"))
                     .replace("{inmunity}", main.config.getString("death-immunity"))
                     .replace("&", "§").replace("1 dias", "1 día").replace("1 días", "1 día");
